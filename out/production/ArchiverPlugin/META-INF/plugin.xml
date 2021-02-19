@@ -26,7 +26,7 @@
   <actions>
     <!-- Add your actions here -->
     <action id="com.ashdawngary.archiver.PopupDialogAction" class="ToHandinsSubmissionAction"
-      text="Popup Action" description="creates a popup, we arent reallys sure yet">
+      text="Make Submission" description="Creates a Handins compliant archive">
       <add-to-group group-id="ToolsMenu" anchor="first"/>
     </action>
   </actions>
