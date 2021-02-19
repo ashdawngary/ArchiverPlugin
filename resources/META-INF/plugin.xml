@@ -1,0 +1,34 @@
+<idea-plugin>
+  <id>com.ashdawngary.archiver</id>
+  <name>Archiver</name>
+  <version>1.0</version>
+  <vendor email="ashdawngary@gmail.com" url="">ashx</vendor>
+
+  <description><![CDATA[
+      Archives src and test folders for handins submisisons.
+    ]]></description>
+
+  <change-notes><![CDATA[
+      No changes yet to the code, still developing.]]>
+  </change-notes>
+
+  <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="173.0"/>
+
+  <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <depends>com.intellij.modules.platform</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Add your extensions here -->
+  </extensions>
+
+  <actions>
+    <!-- Add your actions here -->
+    <action id="com.ashdawngary.archiver.PopupDialogAction" class="PopupDialogAction"
+      text="Popup Action" description="creates a popup, we arent reallys sure yet">
+      <add-to-group group-id="ToolsMenu" anchor="first"/>
+    </action>
+  </actions>
+
+</idea-plugin>
