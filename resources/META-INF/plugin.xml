@@ -25,7 +25,7 @@
 
   <actions>
     <!-- Add your actions here -->
-    <action id="com.ashdawngary.archiver.PopupDialogAction" class="PopupDialogAction"
+    <action id="com.ashdawngary.archiver.PopupDialogAction" class="ToHandinsSubmissionAction"
       text="Popup Action" description="creates a popup, we arent reallys sure yet">
       <add-to-group group-id="ToolsMenu" anchor="first"/>
     </action>
