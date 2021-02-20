@@ -18,6 +18,7 @@
   <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
   <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.java</depends>
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
@@ -25,9 +26,13 @@
 
   <actions>
     <!-- Add your actions here -->
-    <action id="com.ashdawngary.archiver.PopupDialogAction" class="ToHandinsSubmissionAction"
+    <action id="com.ashdawngary.archiver.MakeSubmission" class="ToHandinsSubmissionAction"
       text="Make Submission" description="Creates a Handins compliant archive">
       <add-to-group group-id="ToolsMenu" anchor="first"/>
+    </action>
+    <action id="com.ashdawngary.archiver.JavadocCheck" class="JavadocCheck" text="Check Javadoc"
+      description="Checks for existence and basic formatting of javadoc">
+      <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="com.ashdawngary.archiver.MakeSubmission"/>
     </action>
   </actions>
 
