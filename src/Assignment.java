@@ -17,6 +17,7 @@ import com.intellij.psi.PsiReferenceList;
 import com.intellij.psi.PsiTypeParameter;
 import com.intellij.psi.PsiTypeParameterList;
 import com.intellij.psi.javadoc.PsiDocComment;
+import com.intellij.psi.javadoc.PsiDocTag;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -59,9 +60,9 @@ public class Assignment {
     this.proj = Objects.requireNonNull(proj, "missing project file");
     this.root = Objects.requireNonNull(root, "missing root file");
     this.src = Objects
-        .requireNonNull(root.findFileByRelativePath("./test"), "missing testing directory");
+        .requireNonNull(root.findFileByRelativePath("./src"), "missing testing directory");
     this.test = Objects
-        .requireNonNull(root.findFileByRelativePath("./src"), "missing sources directory");
+        .requireNonNull(root.findFileByRelativePath("./test"), "missing sources directory");
     this.psiManager = PsiManager.getInstance(this.proj);
   }
 
@@ -71,18 +72,28 @@ public class Assignment {
         "Missing physical manifestation of src/");
     PsiDirectory psiTest = Objects.requireNonNull(psiManager.findDirectory(this.test),
         "Missing physical manifestation of test/");
-    checkJavadoc(psiSrc);
-    checkJavadoc(psiTest);
+    List<Issues> srcIssues = checkJavadoc(psiSrc);
+    List<Issues> tstIssues = checkJavadoc(psiTest);
+
+    for (Issues issue : srcIssues) {
+      System.out.println("src/ " + issue.toString());
+    }
+
+    for (Issues issue : tstIssues) {
+      System.out.println("test/ " + issue.toString());
+    }
   }
 
   private List<Issues> checkJavadoc(PsiDirectory cd) {
+    List<Issues> is = new LinkedList<>();
     for (PsiDirectory subdir : cd.getSubdirectories()) {
-      checkJavadoc(subdir);
+      is.addAll(checkJavadoc(subdir));
     }
 
-    return Arrays.stream(cd.getFiles()).filter(fi -> fi instanceof PsiJavaFile)
+    is.addAll(Arrays.stream(cd.getFiles()).filter(fi -> fi instanceof PsiJavaFile)
         .map(jfi -> checkJavadoc((PsiJavaFile) jfi)).flatMap(Collection::stream).collect(
-            Collectors.toList());
+            Collectors.toList()));
+    return is;
   }
 
 
@@ -92,7 +103,6 @@ public class Assignment {
    * @param jf psijavafile to analyze.
    */
   private List<Issues> checkJavadoc(PsiJavaFile jf) {
-    System.out.println("Observing: " + jf.getName());
     PsiElement[] fileElements = jf.getChildren();
     return Arrays.stream(fileElements).filter(elem -> elem instanceof PsiClass)
         .map(jclass -> checkJavadoc((PsiClass) jclass)).flatMap(
@@ -103,7 +113,7 @@ public class Assignment {
   /**
    * Check Javadoc over a PsiClass for issues.
    *
-   * @param cl
+   * @param cl PsiClass to analyze.
    */
   private List<Issues> checkJavadoc(PsiClass cl) {
     PsiElement[] c = cl.getChildren();
@@ -141,6 +151,9 @@ public class Assignment {
       noJD.add(new Issues("unable to find javadoc for: " + mth.getName()));
       return noJD;
     }
+
+    List<Issues> initProblems = checkClassJavaDoc((PsiDocComment) children[0]);
+
     List<PsiTypeParameter> typebound = Arrays.stream(children)
         .filter(child -> child instanceof PsiTypeParameterList).map(
             PsiElement::getChildren).flatMap(Arrays::stream)
@@ -159,14 +172,77 @@ public class Assignment {
         .map(child -> (PsiJavaCodeReferenceElement) child)
         .collect(Collectors.toList());
 
-    return checkMethodJavaDoc((PsiDocComment) children[0], methodParams, typebound, exeThrown);
+    initProblems.addAll( checkMethodJavaDoc((PsiDocComment) children[0], methodParams, typebound, exeThrown));
+    return initProblems;
 
   }
 
   private List<Issues> checkMethodJavaDoc(PsiDocComment jdele, List<PsiParameter> methodParams,
       List<PsiTypeParameter> typebound, List<PsiJavaCodeReferenceElement> exeThrown) {
     //TODO: cross-check jdele against signature for all elements.
-    return new LinkedList<>();
+
+    LinkedList<Issues> methodIssues = new LinkedList<>();
+
+    List<PsiDocTag> jdTags = Arrays.stream(jdele.getChildren())
+        .filter(child -> child instanceof PsiDocTag)
+        .map(child -> (PsiDocTag) child).collect(Collectors.toList());
+
+    LinkedList<String> foundParams = new LinkedList<>();
+    LinkedList<String> foundGeneric = new LinkedList<>();
+    LinkedList<String> foundExcept = new LinkedList<>();
+
+    for (PsiDocTag b : jdTags) {
+      String tAnnotate = b.getNameElement().getText();
+      PsiElement p = b.getValueElement();
+      if (p == null) {
+        // no tag attached, we have issues.
+        continue;
+      }
+
+      String foundDesc = "";
+      if (tAnnotate.equals("@param")) {
+        if (p.getChildren().length == 3) {
+          // its a type param
+          foundGeneric.add(p.getChildren()[1].getText());
+          foundDesc = "Typebound-generic " + p.getChildren()[1].getText();
+        } else if (p.getChildren().length == 1) {
+          foundParams.add(p.getChildren()[0].getText());
+          foundDesc = "method param " + p.getChildren()[0].getText();
+        }
+      } else if (tAnnotate.equals("@throws")) {
+        String exceptionName = p.getChildren()[0].getText();
+        foundExcept.add(p.getChildren()[0].getText());
+        foundDesc = "exception type " + exceptionName;
+      } else {
+        // unsure
+        continue;
+      }
+
+      if (b.getChildren()[2].getText().length() < 3) {
+        methodIssues.add(new Issues(String.format("No javadoc desc for %s", foundDesc)));
+      }
+    }
+
+    for (PsiParameter mparam : methodParams) {
+      if (!foundParams.contains(mparam.getName())) {
+        methodIssues
+            .add(new Issues("failed to find @param annotation for: " + mparam.getName()));
+      }
+    }
+    for (PsiTypeParameter genericParam : typebound) {
+      if (!foundGeneric.contains(genericParam.getName())) {
+        methodIssues
+            .add(new Issues("failed to find @param annotation for: " + genericParam.getName()));
+      }
+    }
+
+    for (PsiJavaCodeReferenceElement jcr : exeThrown) {
+      if (!foundExcept.contains(jcr.getText())) {
+        methodIssues
+            .add(new Issues("failed to find @throws annotation for: " + jcr.getText()));
+      }
+    }
+    return methodIssues;
   }
 
   private boolean isOverrideOrTest(PsiJavaCodeReferenceElement annotate) {
