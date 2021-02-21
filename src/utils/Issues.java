@@ -1,3 +1,5 @@
+package utils;
+
 public class Issues {
 
   private final String message;

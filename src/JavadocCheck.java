@@ -25,7 +25,7 @@ public class JavadocCheck extends AnAction {
     VirtualFile[] toplevel = ProjectRootManager.getInstance(currentProject).getContentRoots();
     try{
       Assignment assign = new Assignment(toplevel[0], currentProject);
-      assign.remedyJavadoc();
+      assign.checkJavaDoc();
     }catch(NullPointerException e){
       System.out.println(e.getMessage());
     }
