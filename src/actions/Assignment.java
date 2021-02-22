@@ -1,22 +1,20 @@
-import static utils.JDLinterUtils.checkJavadoc;
+package actions;
+
 import static utils.ZipperUtils.compressToAccumulate;
 
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiManager;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.zip.ZipOutputStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import utils.Issues;
 
 /**
  * lmao imagine using javadoc
@@ -47,31 +45,12 @@ public class Assignment {
   }
 
 
-  public void checkJavaDoc() {
-    PsiDirectory psiSrc = Objects.requireNonNull(psiManager.findDirectory(this.src),
-        "Missing physical manifestation of src/");
-    PsiDirectory psiTest = Objects.requireNonNull(psiManager.findDirectory(this.test),
-        "Missing physical manifestation of test/");
-    List<Issues> srcIssues = checkJavadoc(psiSrc);
-    List<Issues> tstIssues = checkJavadoc(psiTest);
-
-    for (Issues issue : srcIssues) {
-      System.out.println("src/ " + issue.toString());
-    }
-
-    for (Issues issue : tstIssues) {
-      System.out.println("test/ " + issue.toString());
-    }
-  }
-
-
-
   public String toZip() throws IOException {
     return toZip(null);
   }
 
   /**
-   * Compresses Assignment to Zip
+   * Compresses actions.Assignment to Zip
    *
    * @param providedIndicator progress bar for notifs.
    * @return string path to zip
@@ -98,7 +77,6 @@ public class Assignment {
 
     return zipFileName;
   }
-
 
 
 }

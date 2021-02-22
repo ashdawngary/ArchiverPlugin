@@ -22,7 +22,8 @@ public class ZipperUtils {
    * @param trueRootPath true root of workspace (to compute relative paths)
    */
   public static void compressToAccumulate(
-      ZipOutputStream zf, String localRoot, Path trueRootPath, final Optional<ProgressIndicator> pi) {
+      ZipOutputStream zf, String localRoot, Path trueRootPath,
+      final Optional<ProgressIndicator> pi) {
     final Path localRootPath = Paths.get(localRoot);
     try {
       Files.walkFileTree(localRootPath, new SimpleFileVisitor<Path>() {

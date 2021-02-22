@@ -1,3 +1,5 @@
+package actions;
+
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
@@ -43,7 +45,7 @@ public class ToHandinsSubmissionAction extends AnAction {
           new Modal(currentProject, "Making archive for " + currentProject.getName(),
               false) {
 
-            public void announce(String title, String message){
+            public void announce(String title, String message) {
               NotificationGroup ng = new NotificationGroup("demo.notifications.toolWindow",
                   NotificationDisplayType.TOOL_WINDOW,
                   true);

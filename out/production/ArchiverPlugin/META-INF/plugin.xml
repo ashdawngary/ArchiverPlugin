@@ -22,17 +22,21 @@
 
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
+    <localInspection language="JAVA"
+      displayName="SDK: '==' or '!=' used instead of 'equals()'"
+      groupPath="Java"
+      groupBundle="messages.InspectionsBundle"
+      groupKey="group.names.probable.bugs"
+      enabledByDefault="true"
+      level="WARNING"
+      implementationClass="inspectors.JavaDocInspector"/>
   </extensions>
 
   <actions>
     <!-- Add your actions here -->
-    <action id="com.ashdawngary.archiver.MakeSubmission" class="ToHandinsSubmissionAction"
+    <action id="com.ashdawngary.archiver.MakeSubmission" class="actions.ToHandinsSubmissionAction"
       text="Make Submission" description="Creates a Handins compliant archive">
       <add-to-group group-id="ToolsMenu" anchor="first"/>
-    </action>
-    <action id="com.ashdawngary.archiver.JavadocCheck" class="JavadocCheck" text="Check Javadoc"
-      description="Checks for existence and basic formatting of javadoc">
-      <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="com.ashdawngary.archiver.MakeSubmission"/>
     </action>
   </actions>
 
