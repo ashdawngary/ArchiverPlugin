@@ -7,3 +7,7 @@ Current Features impl:
 Features to implement:
 - `Make Testing Classes` (from source)
 - `New Method Test`
+- `Switch empty default enforcer`
+- 'No empty function enforcer'
+- 'Good References (no returning fields) enforcer'
+- 'private final enforcer'
