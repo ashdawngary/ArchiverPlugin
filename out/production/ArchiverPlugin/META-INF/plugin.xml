@@ -23,13 +23,30 @@
   <extensions defaultExtensionNs="com.intellij">
     <!-- Add your extensions here -->
     <localInspection language="JAVA"
-      displayName="SDK: '==' or '!=' used instead of 'equals()'"
+      displayName="Checks for any missing javadoc components."
       groupPath="Java"
       groupBundle="messages.InspectionsBundle"
       groupKey="group.names.probable.bugs"
       enabledByDefault="true"
       level="WARNING"
       implementationClass="inspectors.JavaDocInspector"/>
+    <localInspection language="JAVA"
+      displayName="Checks for default clauses in switches."
+      groupPath="Java"
+      groupBundle="messages.InspectionsBundle"
+      groupKey="group.names.probable.bugs"
+      enabledByDefault="true"
+      level="WARNING"
+      implementationClass="inspectors.switches.EnforceDefaultInspector"/>
+    <localInspection language="JAVA"
+      displayName="Makes sure there is only 1 field decl per line."
+      groupPath="Java"
+      groupBundle="messages.InspectionsBundle"
+      groupKey="group.names.probable.bugs"
+      enabledByDefault="true"
+      level="WARNING"
+      implementationClass="inspectors.MultiDefintionSLInspector"/>
+
   </extensions>
 
   <actions>
